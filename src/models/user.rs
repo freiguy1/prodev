@@ -22,7 +22,7 @@ fn get_all_users() -> Vec<User> {
             id: 1,
             first_name: "Sally".to_string(),
             last_name: "Sharpe".to_string(),
-            email: "manager@mcis.com".to_string(),
+            email: "manager@company.com".to_string(),
             occupation: "Manager".to_string(),
             password: "password123".to_string()
         },
@@ -30,7 +30,7 @@ fn get_all_users() -> Vec<User> {
             id: 2,
             first_name: "Galvin".to_string(),
             last_name: "McQuaid".to_string(),
-            email: "employee@mcis.com".to_string(),
+            email: "employee@company.com".to_string(),
             occupation: "Programmer/Analyst".to_string(),
             password: "password123".to_string()
         }

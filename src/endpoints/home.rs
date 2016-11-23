@@ -14,7 +14,7 @@ pub fn handler<'mw>(req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'
     let mut data = HashMap::new();
     data.insert("first_name", user.first_name);
     data.insert("last_name", user.last_name);
-    data.insert("occupation", user.occupation);
+    data.insert("occupation", user.occupation.to_lowercase());
     res.render("templates/home", &data)
 }
 
