@@ -5,6 +5,7 @@ extern crate cookie;
 
 mod endpoints;
 mod models;
+mod auth;
 
 use std::collections::HashMap;
 use nickel::{Nickel, HttpRouter};
