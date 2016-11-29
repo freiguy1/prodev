@@ -6,13 +6,13 @@
 </head>
 <body>
     <h2>Professional Development</h2>
-    <p>Welcome {{first_name}} {{last_name}}!  You are a(n) {{occupation}} and this is your Professional Development dashboard</p>
-    {{#years}}
-        <p>{{year}}</p>
-        {{#activities}}
-            <p>Description: {{description}}</p>
-            <p>Points: {{points}}</p>
-        {{/activities}}
-    {{/years}}
+    <p>Welcome {{first_name}} {{last_name}} ({{occupation}})!</p>
+
+    <h4>Worksheets</h4>
+    <ul>
+        {{#years}}
+        <li><a href="/worksheets/{{year}}">{{year}}</a>
+        {{/years}}
+    </ul>
 </body>
 </html>

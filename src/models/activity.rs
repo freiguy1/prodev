@@ -5,9 +5,9 @@ pub struct Activity {
     pub description: String
 }
 
-// pub fn get_activities_by_user_year(user_id: i32, year: i32) -> Vec<Activity> {
-    // get_activities().into_iter().filter(|a| a.user_id == user_id && a.year == year).collect()
-// }
+pub fn get_activities_by_user_year(user_id: i32, year: i32) -> Vec<Activity> {
+    get_activities().into_iter().filter(|a| a.user_id == user_id && a.year == year).collect()
+}
 
 pub fn get_activities_by_user(user_id: i32) -> Vec<Activity> {
     get_activities().into_iter().filter(|a| a.user_id == user_id).collect()

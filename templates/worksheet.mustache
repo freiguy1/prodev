@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>Professional Development</title>
+</head>
+<body>
+    <h2>{{year}}</h2>
+
+    {{^has_activities}}
+    <p>Nothing to see here!</p>
+    {{/has_activities}}
+
+    {{#has_activities}}
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Points</th>
+        </tr>
+        {{#activities}}
+        <tr>
+            <td>{{description}}</td>
+            <td>{{points}}</td>
+        </tr>
+        {{/activities}}
+    </table>
+    {{/has_activities}}
+</body>
+</html>

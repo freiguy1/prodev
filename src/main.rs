@@ -27,4 +27,5 @@ fn set_up_endpoints(server: &mut Nickel) {
     server.get("/login", endpoints::login::handler);
     server.post("/login", endpoints::login::post_handler);
     server.get("/home", endpoints::home::handler);
+    server.get("/worksheets/:year", endpoints::worksheet::handler);
 }
