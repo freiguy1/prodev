@@ -30,7 +30,7 @@ pub fn handler<'mw>(req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'
     let data = HomeModel {
         first_name: user.first_name.clone(),
         last_name: user.last_name.clone(),
-        occupation: user.occupation.to_lowercase(),
+        occupation: user.occupation.clone(),
         years: years
     };
 
