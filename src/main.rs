@@ -10,7 +10,7 @@ mod endpoints;
 mod models;
 
 use std::collections::HashMap;
-use nickel::{Nickel, HttpRouter};
+use nickel::{Nickel, HttpRouter, StaticFilesHandler, Mountable};
 use nickel_sqlite::SqliteMiddleware;
 use std::fs::File;
 use std::path::Path;
@@ -23,6 +23,8 @@ fn main() {
 
     set_up_endpoints(&mut server);
     set_up_api(&mut server);
+
+    server.mount("/assets/", StaticFilesHandler::new("assets"));
 
     server.listen("0.0.0.0:6767").ok().expect("Unable to host site");
 }

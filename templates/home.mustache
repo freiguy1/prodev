@@ -3,16 +3,22 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html">
     <title>Professional Development</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.css"/>
+    <link rel="stylesheet" href="assets/css/bootstrap-theme.css"/>
 </head>
 <body>
     <h2>Professional Development</h2>
     <p>Welcome {{first_name}} {{last_name}} ({{occupation}})!</p>
 
+  <span class="glyphicon glyphicon-search"></span>
     <h4>Worksheets</h4>
     <ul>
         {{#years}}
         <li><a href="/worksheets/{{year}}">{{year}}</a>
         {{/years}}
     </ul>
+
+    <script src="assets/js/jquery-3.1.1.min.js"/>
+    <script src="assets/js/bootstrap.js"/>
 </body>
 </html>
