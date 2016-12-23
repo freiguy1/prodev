@@ -6,6 +6,7 @@ CREATE TABLE worksheet (
 
 CREATE TABLE activity (
     id INTEGER PRIMARY KEY,
+    points INTEGER NOT NULL,
     worksheet_id INTEGER NOT NULL,
     description VARCHAR(128) NOT NULL,
     note TEXT NULL

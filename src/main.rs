@@ -3,6 +3,9 @@ extern crate nickel_sqlite;
 extern crate rustc_serialize;
 extern crate hyper;
 extern crate cookie;
+extern crate rusqlite;
+extern crate r2d2;
+extern crate r2d2_sqlite;
 
 mod api;
 mod auth;
