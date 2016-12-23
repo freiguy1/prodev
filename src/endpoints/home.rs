@@ -9,7 +9,7 @@ pub fn handler<'mw>(req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'
     }
     let user = user.unwrap();
 
-    let activities = ::models::activity::get_activities_by_user(user.id);
+    let activities: Vec<::models::activity::Activity> = Vec::new();// = ::models::activity::get_activities_by_user(user.id);
     let mut years: Vec<YearModel> = Vec::new();
     for a in activities.iter() {
         let activity = ActivityModel {

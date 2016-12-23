@@ -35,26 +35,19 @@ impl<'mw> Accessor for ActivityAccessor<'mw> {
     type UpdateDao = ActivityDao;
     type CreateDao = CreateActivityDao;
 
-    fn create(&self, createDao: &Self::CreateDao) -> SqliteResult<i32> {
+    fn create(&self, create_dao: &Self::CreateDao) -> SqliteResult<i32> {
         let query = "INSERT INTO activity (points, worksheet_id, description, note) VALUES (?, ?, ?, ?);";
-        try!(self.conn.execute(query, &[&createDao.points, &createDao.worksheet_id, &createDao.description, &createDao.note]));
+        try!(self.conn.execute(query, &[&create_dao.points, &create_dao.worksheet_id, &create_dao.description, &create_dao.note]));
         Ok(self.conn.last_insert_rowid() as i32)
-        /*
-    id INTEGER PRIMARY KEY,
-    points INTEGER NOT NULL,
-    worksheet_id INTEGER NOT NULL,
-    description VARCHAR(128) NOT NULL,
-    note TEXT NULL
-        */
     }
 
-    fn update(&self, updateDao: &Self::UpdateDao) -> SqliteResult<()> {
-        let query = "UPDATE activity (points, worksheet_id, description, note) VALUES (?, ?, ?, ?) WHERE id = ?;";
-        let query_data: &[&::rusqlite::types::ToSql] = &[&updateDao.points,
-                          &updateDao.worksheet_id,
-                          &updateDao.description,
-                          &updateDao.note,
-                          &updateDao.id];
+    fn update(&self, update_dao: &Self::UpdateDao) -> SqliteResult<()> {
+        let query = "UPDATE activity SET points = ?, worksheet_id = ?, description = ?, note = ? WHERE id = ?;";
+        let query_data: &[&::rusqlite::types::ToSql] = &[&update_dao.points,
+                          &update_dao.worksheet_id,
+                          &update_dao.description,
+                          &update_dao.note,
+                          &update_dao.id];
         try!(self.conn.execute(query, query_data));
         Ok(())
     }
@@ -83,73 +76,122 @@ impl<'mw> Accessor for ActivityAccessor<'mw> {
     }
 }
 
-
-
+// Flagged for removal!
 pub struct Activity {
     pub user_id: i32,
     pub points: i32,
     pub year: i32,
-    pub description: String,
+    pub description: String
 }
 
+#[cfg(test)]
+mod tests {
+    use r2d2_sqlite::SqliteConnectionManager;
+    use r2d2::{Pool, PooledConnection, Config};
+    use super::*;
+    use models::Accessor;
 
-pub fn get_activities_by_user_year(user_id: i32, year: i32) -> Vec<Activity> {
-    get_activities().into_iter().filter(|a| a.user_id == user_id && a.year == year).collect()
-}
+    fn get_db_conn() -> PooledConnection<SqliteConnectionManager> {
+        let config = Config::builder().pool_size(1).build();
+        let manager = SqliteConnectionManager::new("file.db");
+        let pool = Pool::new(config, manager).expect("Could not create db pool");
+        pool.get().expect("Could not get connection from pool")
+    }
 
-pub fn get_activities_by_user(user_id: i32) -> Vec<Activity> {
-    get_activities().into_iter().filter(|a| a.user_id == user_id).collect()
-}
-
-fn get_activities() -> Vec<Activity> {
-    vec![
-        Activity {
-            user_id: 1,
-            year: 2015,
-            points: 4,
-            description: "Read a book".to_string()
-        },
-        Activity {
-            user_id: 1,
-            year: 2015,
+    #[test]
+    fn create_activity() {
+        let conn = get_db_conn();
+        let accessor = ActivityAccessor::new(&conn);
+        // Create activity
+        let create_dao = CreateActivityDao {
+            worksheet_id: 1,
             points: 1,
-            description: "Study Group".to_string()
-        },
-        Activity {
-            user_id: 1,
-            year: 2016,
-            points: 2,
-            description: "Read a blog".to_string()
-        },
-        Activity {
-            user_id: 1,
-            year: 2016,
-            points: 5,
-            description: "Mentor".to_string()
-        },
-        Activity {
-            user_id: 2,
-            year: 2015,
-            points: 4,
-            description: "Read a book".to_string()
-        },
-        Activity {
-            user_id: 2,
-            year: 2015,
+            description: "Test Activity".to_string(),
+            note: None
+        };
+        let result = accessor.create(&create_dao);
+        assert!(result.is_ok());
+
+        // Get created activity from db
+        let result = accessor.get_by_id(result.unwrap());
+        assert!(result.is_ok());
+        let created_activity_opt = result.unwrap();
+        assert!(created_activity_opt.is_some());
+        let created_activity = created_activity_opt.unwrap();
+        assert_eq!(create_dao.worksheet_id, created_activity.worksheet_id);
+        assert_eq!(create_dao.points, created_activity.points);
+        assert_eq!(create_dao.description, created_activity.description);
+        assert_eq!(create_dao.note, created_activity.note);
+
+        // Clean up
+        let result = accessor.delete(created_activity.id);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn update_activity() {
+        let conn = get_db_conn();
+        let accessor = ActivityAccessor::new(&conn);
+        // Create activity
+        let create_dao = CreateActivityDao {
+            worksheet_id: 1,
             points: 1,
-            description: "Study Group".to_string()
-        },
-        Activity {
-            user_id: 2,
-            year: 2016,
+            description: "Test Activity".to_string(),
+            note: None
+        };
+        let result = accessor.create(&create_dao);
+        assert!(result.is_ok());
+
+        // Update activity
+        let update_dao = ActivityDao {
+            id: result.unwrap(),
+            worksheet_id: 4,
             points: 2,
-            description: "Read a blog".to_string()
-        },
-        Activity {
-            user_id: 2,
-            year: 2016,
-            points: 5,
-            description: "Mentor".to_string()
-        }
-    ]
+            description: "Test Activity - edited".to_string(),
+            note: Some("Updating note!".to_string())
+        };
+        let result = accessor.update(&update_dao);
+        assert!(result.is_ok());
+
+        // Get updated activity from db
+        let result = accessor.get_by_id(update_dao.id);
+        assert!(result.is_ok());
+        let updated_activity_opt = result.unwrap();
+        assert!(updated_activity_opt.is_some());
+        let updated_activity = updated_activity_opt.unwrap();
+        assert_eq!(update_dao.worksheet_id, updated_activity.worksheet_id);
+        assert_eq!(update_dao.points, updated_activity.points);
+        assert_eq!(update_dao.description, updated_activity.description);
+        assert_eq!(update_dao.note, updated_activity.note);
+
+        // Clean up
+        let result = accessor.delete(updated_activity.id);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn delete_activity() {
+        let conn = get_db_conn();
+        let accessor = ActivityAccessor::new(&conn);
+        // Create activity
+        let create_dao = CreateActivityDao {
+            worksheet_id: 1,
+            points: 1,
+            description: "Test Activity".to_string(),
+            note: None
+        };
+        let result = accessor.create(&create_dao);
+        assert!(result.is_ok());
+
+        // Delete activity
+        let activity_id = result.unwrap();
+        let result = accessor.delete(activity_id);
+        assert!(result.is_ok());
+
+        // Get nothing when searcing by deleted id
+        let result = accessor.get_by_id(activity_id);
+        assert!(result.is_ok());
+        let activity_opt = result.unwrap();
+        assert!(activity_opt.is_none());
+    }
 }

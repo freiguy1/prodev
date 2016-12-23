@@ -17,7 +17,7 @@ pub fn handler<'mw>(req: &mut Request, mut res: Response<'mw>) -> MiddlewareResu
     }
     let year = year.unwrap();
 
-    let activities = ::models::activity::get_activities_by_user_year(user.id, year);
+    let activities: Vec<::models::activity::Activity> = Vec::new();// = ::models::activity::get_activities_by_user(user.id);
     let data = WorksheetModel {
         year: year,
         has_activities: activities.len() > 0,
