@@ -1,14 +1,14 @@
-use ::auth::UserCookie;
 use nickel::{Request, Response, MiddlewareResult};
 use nickel::status::StatusCode;
-use nickel::extensions::{Redirect};
 
 pub fn handler<'mw>(req: &mut Request, mut res: Response<'mw>) -> MiddlewareResult<'mw> {
-    let user = req.get_user();
-    if user.is_none() {
-        return res.redirect("/login");
-    }
-    let user = user.unwrap();
+    // When you need user in the future, user this stuff
+// use ::auth::UserCookie;
+    // let user = req.get_user();
+    // if user.is_none() {
+        // return res.redirect("/login");
+    // }
+    // let user = user.unwrap();
 
     let year = req.param("year").and_then(|y| y.parse::<i32>().ok());
     if year.is_none() {

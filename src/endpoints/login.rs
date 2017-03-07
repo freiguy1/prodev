@@ -1,5 +1,4 @@
 use hyper::header::SetCookie;
-use cookie::Cookie;
 use nickel::{Request, Response, MiddlewareResult, FormBody};
 use nickel::extensions::{Redirect};
 use std::collections::HashMap;
@@ -29,7 +28,7 @@ pub fn post_handler<'mw>(req: &mut Request, mut res: Response<'mw>) -> Middlewar
     }
     let user = user.unwrap();
 
-    let cookie = Cookie::new("id".to_string(), user.id.to_string());
+    let cookie = ::hyper::header::CookiePair::new("id".to_string(), user.id.to_string());
     res.set(SetCookie(vec![cookie]));
     res.redirect("/home")
 }
