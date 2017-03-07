@@ -1,2 +1,5 @@
 target
 /file.db
+
+# vim save files
+*.swp
